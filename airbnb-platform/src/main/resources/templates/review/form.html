@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrie o recenzie - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-danger text-white">
+                            <h4 class="mb-0"><i class="fas fa-star"></i> <span th:text="${review.id == null ? 'Scrie o recenzie' : 'Editeaza recenzia'}">Scrie o recenzie</span></h4>
+                            <small th:if="${property != null}" th:text="${property.name}">Proprietate</small>
+                        </div>
+                        <div class="card-body p-5">
+                            <form method="POST" th:object="${review}"
+                                  th:action="${review.id == null} ? @{/properties/{pid}/reviews(pid=${propertyId})} : @{/properties/{pid}/reviews/{id}(pid=${propertyId},id=${review.id})}">
+                                <div class="mb-3">
+                                    <label for="rating" class="form-label">Rating *</label>
+                                    <select class="form-select" id="rating" th:field="*{rating}" th:errorclass="is-invalid" required>
+                                        <option value="">Alege ratingul</option>
+                                        <option value="1">1 - Slab</option>
+                                        <option value="2">2 - Acceptabil</option>
+                                        <option value="3">3 - Bun</option>
+                                        <option value="4">4 - Foarte bun</option>
+                                        <option value="5">5 - Excelent</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">Comentariu *</label>
+                                    <textarea class="form-control" id="comment" th:field="*{comment}" th:errorclass="is-invalid" rows="4" maxlength="1000" required></textarea>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
+                                </div>
+                                <small class="form-text text-muted d-block mb-3">Te rugam sa ne spui sincer cum a fost sederea ta.</small>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-danger btn-lg">Trimite recenzia</button>
+                                    <a th:href="@{/properties/{pid}/reviews(pid=${propertyId})}" class="btn btn-secondary">Anuleaza</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

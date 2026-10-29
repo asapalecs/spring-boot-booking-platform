@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezultatele cautarii - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container mt-4">
+        <h2>Rezultatele cautarii</h2>
+        <p class="text-muted" th:text="'Rezultate pentru: ' + ${keyword}"></p>
+
+        <div class="row" th:if="${properties != null and not #lists.isEmpty(properties.content)}">
+            <div class="col-md-4 mb-4" th:each="property : ${properties.content}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${property.name}">Nume proprietate</h5>
+                        <p class="card-text" th:text="${property.city}">Oras</p>
+                        <p class="card-text" th:text="${property.pricePerNight + ' / noapte'}">Pret</p>
+                        <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary">Vezi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${properties == null or #lists.isEmpty(properties.content)}">
+            <p>Nu au fost gasite proprietati pentru cautarea ta.</p>
+        </div>
+
+        <a href="/properties" class="btn btn-secondary mt-3">Inapoi la toate proprietatile</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

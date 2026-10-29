@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proprietati - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="bg-light py-4 border-bottom">
+        <div class="container">
+            <h1 class="mb-2"><i class="fas fa-building text-danger"></i> Proprietati</h1>
+            <p class="text-muted">Exploreaza colectia noastra de proprietati</p>
+        </div>
+    </section>
+
+    <section class="py-4 bg-white border-bottom">
+        <div class="container">
+            <form method="GET" th:action="@{/properties}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchCity" class="form-label">Oras</label>
+                    <input type="text" class="form-control" id="searchCity" name="city" th:value="${currentCity}" placeholder="Cauta dupa oras">
+                </div>
+                <div class="col-md-2">
+                    <label for="sortBy" class="form-label">Sorteaza dupa</label>
+                    <select class="form-select" id="sortBy" name="sort">
+                        <option value="" th:selected="${currentSort == null || currentSort.isEmpty()}">Implicit</option>
+                        <option value="price_asc" th:selected="${currentSort == 'price_asc'}">Pret (crescator)</option>
+                        <option value="price_desc" th:selected="${currentSort == 'price_desc'}">Pret (descrescator)</option>
+                        <option value="name" th:selected="${currentSort == 'name'}">Nume (A-Z)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="minPrice" class="form-label">Pret minim</label>
+                    <input type="number" class="form-control" id="minPrice" name="minPrice" th:value="${currentMinPrice}" placeholder="0">
+                </div>
+                <div class="col-md-2">
+                    <label for="maxPrice" class="form-label">Pret maxim</label>
+                    <input type="number" class="form-control" id="maxPrice" name="maxPrice" th:value="${currentMaxPrice}" placeholder="10000">
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-search"></i> Filtreaza
+                    </button>
+                    <a href="/properties" th:href="@{/properties}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div th:if="${properties != null && properties.hasContent()}" class="row g-4">
+                <div th:each="property : ${properties.content}" class="col-md-6 col-lg-4">
+                    <div class="property-card">
+                        <div class="property-image-wrapper">
+                            <img th:src="@{/images/placeholder.svg}" alt="Proprietate" class="property-image">
+                            <span class="badge bg-success position-absolute top-0 start-0 m-3">
+                                <i class="fas fa-check-circle"></i> Verificat
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${property.name}">Nume proprietate</h5>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                <span th:text="${property.city}">Oras</span>, <span th:text="${property.country}">Tara</span>
+                            </p>
+                            <p class="text-muted small" th:text="${property.description}">Descriere</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="price-badge">
+                                    <strong th:text="'$' + ${property.pricePerNight}">$100</strong>/noapte
+                                </span>
+                                <div class="rating">
+                                    <span class="stars">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span>Nou</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-outline-danger btn-sm w-100">
+                                Vezi detalii
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${properties == null || !properties.hasContent()}" class="alert alert-info text-center py-5">
+                <i class="fas fa-info-circle fa-2x mb-3"></i>
+                <h5>Nu au fost gasite proprietati</h5>
+                <p>Incearca sa modifici filtrele de cautare</p>
+            </div>
+
+            <nav th:if="${properties != null && properties.totalPages > 1}" aria-label="Navigare pagini">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${properties.first ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/properties(page=0)}" th:if="${!properties.first}">Prima</a>
+                        <span class="page-link" th:if="${properties.first}">Prima</span>
+                    </li>
+                    <li class="page-item" th:classappend="${!properties.hasPrevious() ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/properties(page=${properties.number - 1})}" th:if="${properties.hasPrevious()}">Anterioara</a>
+                        <span class="page-link" th:if="${!properties.hasPrevious()}">Anterioara</span>
+                    </li>
+                    <li class="page-item active" th:each="i : ${#numbers.sequence(0, properties.totalPages - 1)}">
+                        <a class="page-link" href="#" th:href="@{/properties(page=${i})}" th:text="${i + 1}" th:classappend="${properties.number == i ? 'active' : ''}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!properties.hasNext() ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/properties(page=${properties.number + 1})}" th:if="${properties.hasNext()}">Urmatoarea</a>
+                        <span class="page-link" th:if="${!properties.hasNext()}">Urmatoarea</span>
+                    </li>
+                    <li class="page-item" th:classappend="${properties.last ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/properties(page=${properties.totalPages - 1})}" th:if="${!properties.last}">Ultima</a>
+                        <span class="page-link" th:if="${properties.last}">Ultima</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

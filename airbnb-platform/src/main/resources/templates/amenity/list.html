@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitati - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-star text-danger"></i> Facilitati</h2>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/amenities/new}" class="btn btn-danger">
+                    <i class="fas fa-plus"></i> Adauga facilitate
+                </a>
+            </div>
+
+            <div th:if="${amenities.isEmpty()}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Nu exista inca facilitati.
+            </div>
+
+            <div class="table-responsive" th:unless="${amenities.isEmpty()}">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nume</th>
+                            <th>Descriere</th>
+                            <th>Actiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="amenity : ${amenities}">
+                            <td>
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span th:text="${amenity.name}">Facilitate</span>
+                            </td>
+                            <td th:text="${amenity.description}">Descriere</td>
+                            <td>
+                                <a th:href="@{/amenities/{id}(id=${amenity.id})}" class="btn btn-sm btn-outline-primary">Vezi</a>
+                                <th:block sec:authorize="hasRole('ADMIN')">
+                                    <a th:href="@{/amenities/{id}/edit(id=${amenity.id})}" class="btn btn-sm btn-primary">Editeaza</a>
+                                    <a th:href="@{/amenities/{id}/delete(id=${amenity.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Stergi facilitatea?');">Sterge</a>
+                                </th:block>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalii facilitate - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-danger text-white">
+                            <h4 class="mb-0"><i class="fas fa-star"></i> <span th:text="${amenity.name}">Facilitate</span></h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <p th:text="${amenity.description != null and !amenity.description.isBlank() ? amenity.description : 'Fara descriere.'}">Descriere</p>
+                            <div class="d-flex gap-2 mt-4">
+                                <a th:href="@{/amenities}" class="btn btn-secondary flex-grow-1">
+                                    <i class="fas fa-arrow-left"></i> Inapoi la facilitati
+                                </a>
+                                <a sec:authorize="hasRole('ADMIN')" th:href="@{/amenities/{id}/edit(id=${amenity.id})}" class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Editeaza
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

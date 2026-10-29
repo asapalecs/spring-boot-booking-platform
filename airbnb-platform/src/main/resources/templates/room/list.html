@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camere - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-door-open text-danger"></i> Camere</h2>
+                    <p class="text-muted mb-0" th:text="${property.name}">Nume proprietate</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Inapoi la proprietate
+                    </a>
+                    <a sec:authorize="hasAnyRole('HOST', 'ADMIN')" th:href="@{/properties/{id}/rooms/new(id=${property.id})}" class="btn btn-danger">
+                        <i class="fas fa-plus"></i> Adauga camera
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${rooms.isEmpty()}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Aceasta proprietate nu are inca camere.
+            </div>
+
+            <div class="table-responsive" th:unless="${rooms.isEmpty()}">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Camera</th>
+                            <th>Tip</th>
+                            <th>Capacitate</th>
+                            <th>Pret</th>
+                            <th>Disponibila</th>
+                            <th>Actiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="room : ${rooms}">
+                            <td th:text="${room.roomNumber}">Camera 1</td>
+                            <td th:text="${room.roomType == 'SINGLE' ? 'Single' : (room.roomType == 'DOUBLE' ? 'Dubla' : (room.roomType == 'SUITE' ? 'Suita' : room.roomType))}">Dubla</td>
+                            <td th:text="${room.capacity}">2</td>
+                            <td th:text="${room.price != null ? '$' + room.price : '-'}">$80</td>
+                            <td>
+                                <span th:if="${room.available}" class="badge bg-success">Da</span>
+                                <span th:unless="${room.available}" class="badge bg-secondary">Nu</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/properties/{pid}/rooms/{id}(pid=${property.id},id=${room.id})}" class="btn btn-sm btn-outline-primary">Vezi</a>
+                                <th:block sec:authorize="hasAnyRole('HOST', 'ADMIN')">
+                                    <a th:href="@{/properties/{pid}/rooms/{id}/edit(pid=${property.id},id=${room.id})}" class="btn btn-sm btn-primary">Editeaza</a>
+                                    <a th:href="@{/properties/{pid}/rooms/{id}/delete(pid=${property.id},id=${room.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Stergi camera?');">Sterge</a>
+                                </th:block>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

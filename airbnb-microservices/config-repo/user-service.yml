@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:mem:userdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+server:
+  port: 8081
+
+jwt:
+  # genereaza cu: openssl rand -base64 64
+  secret: ${JWT_SECRET:local-development-only-do-not-use-in-any-shared-environment}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}

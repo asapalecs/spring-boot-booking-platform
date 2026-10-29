@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalii rezervare - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5 bg-light min-vh-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-calendar-check"></i> Rezervarea #<span th:text="${reservation.id}">123</span>
+                                </h4>
+                                <span class="badge" th:classappend="'bg-' + ${reservation.status == 'CONFIRMED' ? 'success' : reservation.status == 'PENDING' ? 'warning' : reservation.status == 'CANCELLED' ? 'danger' : 'secondary'}">
+                                    <span th:text="${reservation.status}">Status</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-home text-danger"></i> Proprietate</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title" th:text="${reservation.property.name}">Nume proprietate</h6>
+                                        <p class="text-muted mb-2" th:text="${reservation.property.city + ', ' + reservation.property.country}">Locatie</p>
+                                        <p class="mb-0">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span th:text="${reservation.property.address}">Adresa</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-calendar text-danger"></i> Detalii sedere</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="text-muted small mb-1">Check-in</p>
+                                                <h6 th:text="${#temporals.format(reservation.checkInDate, 'dd.MM.yyyy')}">Data</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="text-muted small mb-1">Check-out</p>
+                                                <h6 th:text="${#temporals.format(reservation.checkOutDate, 'dd.MM.yyyy')}">Data</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="text-muted small mb-1">Numar de oaspeti</p>
+                                                <h6 th:text="${reservation.numberOfGuests}">2</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="text-muted small mb-1">Durata</p>
+                                                <h6 th:text="${reservation.checkOutDate != null && reservation.checkInDate != null ? #temporals.format(reservation.checkInDate, 'dd.MM') + ' → ' + #temporals.format(reservation.checkOutDate, 'dd.MM') : 'N/A'}">perioada</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-user text-danger"></i> Informatii oaspete</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="mb-2">
+                                            <strong th:text="${reservation.guest.firstName + ' ' + reservation.guest.lastName}">Nume oaspete</strong>
+                                        </p>
+                                        <p class="text-muted mb-2">
+                                            <i class="fas fa-envelope"></i>
+                                            <span th:text="${reservation.guest.email}">email@example.com</span>
+                                        </p>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-phone"></i>
+                                            <span th:text="${reservation.guest.phoneNumber}">Telefon</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-credit-card text-danger"></i> Informatii plata</h5>
+                                <div class="card border-danger">
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-6">Pret pe noapte:</div>
+                                            <div class="col-6 text-end"><strong th:text="'$' + ${reservation.property.pricePerNight}">$100</strong></div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">Numar de nopti:</div>
+                                            <div class="col-6 text-end"><strong>3</strong></div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-6"><h5>Suma totala:</h5></div>
+                                            <div class="col-6 text-end"><h5 class="text-danger" th:text="'$' + ${reservation.totalPrice}">$300</h5></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-info-circle text-danger"></i> Detalii rezervare</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="mb-2">
+                                            <span class="text-muted">Creat:</span>
+                                            <strong th:text="${#temporals.format(reservation.createdAt, 'dd.MM.yyyy HH:mm')}">Data</strong>
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="text-muted">ID rezervare:</span>
+                                            <strong th:text="'#' + ${reservation.id}">123</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a href="/reservations" th:href="@{/reservations}" class="btn btn-secondary btn-lg flex-grow-1">
+                                    <i class="fas fa-arrow-left"></i> Inapoi la rezervari
+                                </a>
+                                <a th:if="${reservation.status == 'PENDING' and payment == null and #authentication.name == reservation.guest.email}" th:href="@{/payments/reservations/{id}/pay(id=${reservation.id})}" class="btn btn-success btn-lg">
+                                    <i class="fas fa-credit-card"></i> Plateste
+                                </a>
+                                <a th:if="${payment != null}" th:href="@{/payments/{id}(id=${payment.id})}" class="btn btn-outline-success btn-lg">
+                                    <i class="fas fa-receipt"></i> Vezi plata
+                                </a>
+                                <a th:if="${reservation.status == 'CONFIRMED' or reservation.status == 'COMPLETED'}" th:href="@{/properties/{id}/reviews/new(id=${reservation.property.id})}" class="btn btn-outline-warning btn-lg">
+                                    <i class="fas fa-star"></i> Lasa o recenzie
+                                </a>
+                                <button th:if="${reservation.status == 'PENDING'}" type="button" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    <i class="fas fa-times"></i> Anuleaza rezervarea
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Anuleaza rezervarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Sigur vrei sa anulezi aceasta rezervare? Actiunea nu poate fi anulata.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Pastreaz-o</button>
+                    <form method="POST" th:action="@{/reservations/{id}/cancel(id=${reservation.id})}" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Anuleaza rezervarea</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

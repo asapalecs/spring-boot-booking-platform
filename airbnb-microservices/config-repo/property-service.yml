@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: property-service
+  datasource:
+    url: jdbc:h2:mem:propertydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+server:
+  port: 8082
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recenzii - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-star text-warning"></i> Recenzii</h2>
+                    <p class="text-muted mb-0">
+                        <a th:href="@{/properties/{id}(id=${property.id})}" class="text-danger" th:text="${property.name}">Proprietate</a>
+                        <span th:if="${averageRating != null}"> &middot; rating mediu <strong th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">4.5</strong>/5</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div th:if="${reviews.isEmpty()}" class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Nu exista inca recenzii pentru aceasta proprietate.
+                    </div>
+                    <div th:each="r : ${reviews.content}" class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1" th:text="${r.user.firstName + ' ' + r.user.lastName}">Autor recenzie</h5>
+                                    <p class="text-muted small mb-0" th:text="${#temporals.format(r.createdAt, 'dd.MM.yyyy')}">Data</p>
+                                </div>
+                                <div class="stars text-warning">
+                                    <span th:text="'★ ' + ${r.rating} + '/5'">★ 5/5</span>
+                                </div>
+                            </div>
+                            <p class="card-text" th:text="${r.comment}">Comentariu recenzie</p>
+                            <div th:if="${#authentication.name == r.user.email or #authorization.expression('hasRole(''ADMIN'')')}" class="d-flex gap-2">
+                                <a th:href="@{/properties/{pid}/reviews/{id}/edit(pid=${property.id},id=${r.id})}" class="btn btn-sm btn-outline-primary">Editeaza</a>
+                                <a th:href="@{/properties/{pid}/reviews/{id}/delete(pid=${property.id},id=${r.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Stergi recenzia?');">Sterge</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nav th:if="${reviews.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, reviews.totalPages - 1)}" th:classappend="${reviews.number == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/properties/{pid}/reviews(pid=${property.id},page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm" sec:authorize="isAuthenticated()">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Lasa o recenzie</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" th:action="@{/properties/{pid}/reviews(pid=${property.id})}" th:object="${review}">
+                                <div class="mb-3">
+                                    <label for="rating" class="form-label">Rating *</label>
+                                    <select class="form-select" id="rating" th:field="*{rating}" th:errorclass="is-invalid" required>
+                                        <option value="">Alege ratingul</option>
+                                        <option value="1">1 - Slab</option>
+                                        <option value="2">2 - Acceptabil</option>
+                                        <option value="3">3 - Bun</option>
+                                        <option value="4">4 - Foarte bun</option>
+                                        <option value="5">5 - Excelent</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">Comentariu *</label>
+                                    <textarea class="form-control" id="comment" th:field="*{comment}" th:errorclass="is-invalid" rows="4" maxlength="1000" required></textarea>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
+                                </div>
+
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-paper-plane"></i> Trimite recenzia
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="alert alert-light border" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/auth/login}" class="text-danger fw-bold">Autentifica-te</a> pentru a lasa o recenzie.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

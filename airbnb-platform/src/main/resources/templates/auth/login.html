@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autentificare - AirbnbHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <section class="py-5 min-vh-100 d-flex align-items-center bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <h3 class="card-title text-center mb-4">
+                                <i class="fas fa-sign-in-alt text-danger"></i> Autentificare in AirbnbHub
+                            </h3>
+
+                            <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                                <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+
+                            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show">
+                                <i class="fas fa-exclamation-circle"></i> Email sau parola invalida. Incearca din nou.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                            <div th:if="${param.logout}" class="alert alert-info alert-dismissible fade show">
+                                <i class="fas fa-check-circle"></i> Te-ai deconectat cu succes.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                            <form method="POST" th:action="@{/auth/login}" class="needs-validation">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Adresa de email</label>
+                                    <input type="email" class="form-control" id="username" name="username" required>
+                                    <small class="form-text text-muted">Nu vom distribui niciodata emailul tau.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Parola</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="remember" name="remember-me">
+                                    <label class="form-check-label" for="remember">Tine-ma minte</label>
+                                </div>
+
+                                <button type="submit" class="btn btn-danger w-100 btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i> Autentificare
+                                </button>
+                            </form>
+
+                            <hr class="my-4">
+
+                            <p class="text-center mb-0">
+                                Nu ai cont? <a href="/auth/register" th:href="@{/auth/register}" class="text-danger fw-bold">Inregistreaza-te aici</a>
+                            </p>
+
+                            <p class="text-center mt-3">
+                                <a href="/" th:href="@{/}" class="text-muted">Inapoi la pagina principala</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
